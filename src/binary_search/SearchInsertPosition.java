@@ -1,8 +1,9 @@
-package two_pointers;
+package binary_search;
 
 
 public class SearchInsertPosition {
     /**
+     * 5/30/18
      * @param A: an integer sorted array
      * @param target: an integer to be inserted
      * @return: An integer
