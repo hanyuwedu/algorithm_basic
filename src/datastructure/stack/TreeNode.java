@@ -1,8 +1,8 @@
-package binarytree;
+package datastructure.stack;
 
 public class TreeNode {
-    public int val;
-    public TreeNode left, right;
+    int val;
+    TreeNode left, right;
 
     public TreeNode(int val) {
         this.val = val;

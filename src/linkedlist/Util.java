@@ -159,6 +159,42 @@ public class Util {
     }
 
     /**
+     * 7/28/2018
+     * Framework 2 merge
+     *
+     * @param l1: ListNode l1 is the head of the linked list
+     * @param l2: ListNode l2 is the head of the linked list
+     * @return: ListNode head of linked list
+     */
+    public ListNode mergeTwoLists(ListNode l1, ListNode l2) {
+        ListNode dummy = new ListNode(0);
+        ListNode current = dummy;
+        while (l1 != null || l2 != null) {
+            if (l1 == null) {
+                current.next = l2;
+                break;
+            }
+
+            if (l2 == null) {
+                current.next = l1;
+                break;
+            }
+
+            if (l1.val < l2.val) {
+                current.next = l1;
+                l1 = l1.next;
+            } else {
+                current.next = l2;
+                l2 = l2.next;
+            }
+            current = current.next;
+        }
+
+        return dummy.next;
+    }
+
+
+    /**
      * 7/13/2018
      *
      * @param a sorted listnode
