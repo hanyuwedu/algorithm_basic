@@ -57,6 +57,10 @@ public class ValidBinarySearchTree {
      * @param root: The root of binary tree.
      * @return: True if the binary tree is BST, or false
      */
+    public boolean isValidBST2(TreeNode root) {
+        return divideAndConquer(root).isValid;
+    }
+
     private class Info2 {
         TreeNode min;
         TreeNode max;
@@ -69,9 +73,6 @@ public class ValidBinarySearchTree {
         }
     }
 
-    public boolean isValidBST(TreeNode root) {
-        return divideAndConquer(root).isValid;
-    }
 
     private Info2 divideAndConquer(TreeNode root) {
         if (root == null) {
