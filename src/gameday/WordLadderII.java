@@ -4,7 +4,9 @@ import java.util.*;
 
 public class WordLadderII {
     /**
-     * 8/13/2018
+     * 2/25/2019
+     * GameDay
+     * https://www.lintcode.com/problem/word-ladder-ii/description
      *
      * @param start: a string
      * @param end: a string
@@ -12,92 +14,92 @@ public class WordLadderII {
      * @return: a list of lists of string
      */
     public List<List<String>> findLadders(String start, String end, Set<String> dict) {
-        List<List<String>> result = new ArrayList();
-        if (start.equals(end)) {
-            List<String> temp = new ArrayList();
-            temp.add(start);
-            temp.add(end);
-            result.add(temp);
-            return result;
-        }
-
+        List<List<String>> result = new ArrayList<>();
         dict.add(end);
+
         Map<Integer, Set<String>> stepMap = bfs(start, end, dict);
         if (stepMap == null) {
             return result;
         }
-        Stack<String> stack = new Stack();
-        stack.add(start);
 
-        dfs(start, end, stepMap, stack, result, 1);
+        Stack<String> stack = new Stack<>();
+        stack.push(start);
 
+        dfs(result, stepMap, stack, 1, end);
         return result;
     }
 
     private Map<Integer, Set<String>> bfs(String start, String end, Set<String> dict) {
-        Queue<String> queue = new LinkedList();
-        Set<String> visited = new HashSet();
-        Map<Integer, Set<String>> stepMap = new HashMap();
+        int step = 1;
+        Queue<String> queue = new LinkedList<>();
+        Map<Integer, Set<String>> stepMap = new HashMap<>();
+        Set<String> visited = new HashSet<>();
 
         queue.add(start);
         visited.add(start);
 
-        int level = 1;
         while (!queue.isEmpty()) {
-            int width = queue.size();
-            stepMap.put(level, new HashSet());
+            int len = queue.size();
+            stepMap.put(step, new HashSet<>());
 
-            for (int i = 1; i <= width; i++) {
+            for (int i = 1; i <= len; i++) {
                 String current = queue.remove();
-                Set<String> alts = getAlterations(current, visited, dict);
-
-                if (alts.contains(end)) {
-                    stepMap.put(level, new HashSet());
-                    stepMap.get(level).add(end);
+                if (current.equals(end)) {
                     return stepMap;
                 }
-                visited.addAll(alts);
-                stepMap.get(level).addAll(alts);
-                queue.addAll(alts);
+
+                List<String> list = getNext(current, dict);
+                for (String next : list) {
+                    if (!visited.contains(next)) {
+                        visited.add(next);
+                        queue.add(next);
+                        stepMap.get(step).add(next);
+                    }
+                }
             }
-            level++;
+
+            step++;
         }
 
         return null;
     }
 
-
-
-    private void dfs(String current, String end, Map<Integer, Set<String>> stepMap, Stack<String> stack, List<List<String>> result, int level) {
-        if (current.equals(end)) {
-            result.add(new ArrayList(stack));
+    private void dfs(List<List<String>> result, Map<Integer, Set<String>> stepMap, Stack<String> stack, int distance, String end) {
+        if (stack.peek().equals(end)) {
+            result.add(new ArrayList<>(stack));
             return;
         }
 
-        Set<String> alts = getAlterations(current, new HashSet(), stepMap.get(level));
-        for (String next : alts) {
-            stack.add(next);
-            dfs(next, end, stepMap, stack, result, level + 1);
-            stack.pop();
+        for (String next : stepMap.get(distance)) {
+            if (isChangeable(next, stack.peek())) {
+                stack.push(next);
+                dfs(result, stepMap, stack, distance + 1, end);
+                stack.pop();
+            }
         }
     }
 
-    private Set<String> getAlterations(String start, Set<String> visited, Set<String> dict) {
-        Set<String> alts = new HashSet();
-        char[] chars = start.toCharArray();
-        for (int i = 0; i <= chars.length - 1; i++) {
-            for (char c = 'a'; c <= 'z'; c++) {
-                char temp = chars[i];
-                chars[i] = c;
-                String next = new String(chars);
-                if (!visited.contains(next) && dict.contains(next)) {
-                    alts.add(next);
-                }
-                chars[i] = temp;
+    private boolean isChangeable(String a, String b) {
+        int diff = 0;
+        for (int i = 0; i <= a.length() - 1; i++) {
+            if (a.charAt(i) != b.charAt(i)) {
+                diff++;
             }
         }
 
-        return alts;
+        return diff == 1;
+    }
+
+    private List<String>getNext(String current, Set<String> dict) {
+        List<String> list = new ArrayList<>();
+
+        for (String next : dict) {
+            if (isChangeable(next, current)) {
+                list.add(next);
+            }
+        }
+
+        return list;
     }
 
     public static void main(String[] args) {

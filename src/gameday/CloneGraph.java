@@ -8,8 +8,10 @@ import java.util.Map;
 import java.util.Queue;
 
 public class CloneGraph {
-    /*
-     * 8/13/2018
+    /**
+     * 2/21/2019
+     * Gameday
+     * https://www.lintcode.com/problem/clone-graph/description
      *
      * @param node: A undirected graph node
      * @return: A undirected graph node
@@ -19,31 +21,31 @@ public class CloneGraph {
             return null;
         }
 
-        Map<UndirectedGraphNode, UndirectedGraphNode> copy = new HashMap<>();
-        Queue<UndirectedGraphNode> queue = new LinkedList<>();
+        Map<UndirectedGraphNode, UndirectedGraphNode> image = new HashMap<>();
 
-        copy.put(node, new UndirectedGraphNode(node.label));
+        Queue<UndirectedGraphNode> queue = new LinkedList<>();
         queue.add(node);
 
-        /// Copy nodes:
         while (!queue.isEmpty()) {
-            UndirectedGraphNode next = queue.remove();
-            for (UndirectedGraphNode neighbor : next.neighbors) {
-                if (!copy.containsKey(neighbor)) {
-                    copy.put(neighbor, new UndirectedGraphNode(neighbor.label));
-                    queue.add(neighbor);
+            int len = queue.size();
+            for (int i = 1; i <= len; i++) {
+                UndirectedGraphNode current = queue.remove();
+                image.put(current, new UndirectedGraphNode(current.label));
+
+                for (UndirectedGraphNode neighbor : current.neighbors) {
+                    if (!image.containsKey(neighbor)) {
+                        queue.add(neighbor);
+                    }
                 }
             }
         }
 
-        /// copy edge:
-        for (UndirectedGraphNode origin : copy.keySet()) {
-            UndirectedGraphNode image = copy.get(origin);
-            for (UndirectedGraphNode neighbor : origin.neighbors) {
-                image.neighbors.add(copy.get(neighbor));
+        for (UndirectedGraphNode preimage : image.keySet()) {
+            for (UndirectedGraphNode neighbor : preimage.neighbors) {
+                image.get(preimage).neighbors.add(image.get(neighbor));
             }
         }
 
-        return copy.get(node);
+        return image.get(node);
     }
 }

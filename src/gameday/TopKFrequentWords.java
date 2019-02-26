@@ -4,98 +4,40 @@ import java.util.*;
 
 public class TopKFrequentWords {
     /**
-     * 11/24
-     * Comparable class
-     *
-     * @param words: an array of string
-     * @param k: An integer
-     * @return: an array of string
-     */
-    public String[] topKFrequentWords2(String[] words, int k) {
-        if (words == null || words.length == 0) {
-            return new String[0];
-        }
-
-        Map<String, Integer> count = new HashMap<>();
-        for (String word : words) {
-            if (count.containsKey(word)) {
-                count.put(word, count.get(word) + 1);
-            } else {
-                count.put(word, 1);
-            }
-        }
-
-        Queue<Frequency> heap = new PriorityQueue<>();
-        for (Map.Entry<String, Integer> entry : count.entrySet()) {
-            heap.add(new Frequency(entry.getKey(), entry.getValue()));
-        }
-
-        String[] result = new String[k];
-        for (int i = 0; i < k; i++) {
-            result[i] = heap.remove().word;
-        }
-
-        return result;
-    }
-
-    private class Frequency implements Comparable<Frequency> {
-        private String word;
-        private int frequency;
-
-        private Frequency(String word, int frequency) {
-            this.word = word;
-            this.frequency = frequency;
-        }
-
-        @Override
-        public int compareTo(Frequency another) {
-            if (this.frequency != another.frequency) {
-                return another.frequency - this.frequency;
-            } else {
-                return this.word.compareTo(another.word);
-            }
-        }
-    }
-
-
-
-    /**
-     * 11/24
-     * Apply collection sort by lambda function
+     * 2/21/22019
+     * GameDay
+     * https://www.lintcode.com/problem/top-k-frequent-words/description
      *
      * @param words: an array of string
      * @param k: An integer
      * @return: an array of string
      */
     public String[] topKFrequentWords(String[] words, int k) {
-        if (words == null || words.length == 0) {
-            return new String[0];
-        }
-
-        Map<String, Integer> count = new HashMap<>();
+        Map<String, Integer> frequency = new HashMap<>();
         for (String word : words) {
-            if (count.containsKey(word)) {
-                count.put(word, count.get(word) + 1);
-            } else {
-                count.put(word, 1);
-            }
+            frequency.put(word, frequency.getOrDefault(word, 0) + 1);
         }
 
-        List<String> list = new ArrayList<>();
-        list.addAll(count.keySet());
-        Collections.sort(list, (a, b) -> {
-            if (count.get(a) != count.get(b)) {
-                return count.get(b) - count.get(a);
+        Queue<String> heap = new PriorityQueue<>((a, b) -> {
+            if (frequency.get(a) != frequency.get(b)) {
+                return frequency.get(a) - frequency.get(b);
             } else {
-                return a.compareTo(b);
+                return b.compareTo(a);
             }
         });
 
-        String[] result = new String[k];
-        for (int i = 0; i < k ; i++) {
-            result[i] = list.get(i);
+        for (String word : frequency.keySet()) {
+            heap.add(word);
+            while (heap.size() > k) {
+                heap.remove();
+            }
         }
 
-        return result;
+        String[] topK = new String[k];
+        for (int i = k - 1; i >= 0; i--) {
+            topK[i] = heap.remove();
+        }
+
+        return topK;
     }
 }

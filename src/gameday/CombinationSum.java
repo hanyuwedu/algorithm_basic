@@ -4,7 +4,9 @@ import java.util.*;
 
 public class CombinationSum {
     /**
-     * 8/13/2018
+     * 2/21/2019
+     * Gameday
+     * https://www.lintcode.com/problem/combination-sum/
      *
      * @param candidates: A list of integers
      * @param target: An integer
@@ -12,21 +14,21 @@ public class CombinationSum {
      */
     public List<List<Integer>> combinationSum(int[] candidates, int target) {
         if (candidates == null || candidates.length == 0) {
-            return new ArrayList();
+            return new ArrayList<>();
         }
 
+        List<List<Integer>> list = new ArrayList<>();
+        Stack<Integer> stack = new Stack<>();
         Arrays.sort(candidates);
-        Stack<Integer> stack = new Stack();
-        List<List<Integer>> result = new ArrayList();
 
-        dfs(candidates, target, result, stack, 0, 0);
+        dfs(candidates, target, list, stack, 0, 0);
 
-        return result;
+        return list;
     }
 
-    private void dfs(int[] candidates, int target, List<List<Integer>> result, Stack<Integer> stack, int sum, int i) {
+    private void dfs(int[] candidates, int target, List<List<Integer>> list, Stack<Integer> stack, int index, int sum) {
         if (sum == target) {
-            result.add(new ArrayList(stack));
+            list.add(new ArrayList<>(stack));
             return;
         }
 
@@ -34,13 +36,20 @@ public class CombinationSum {
             return;
         }
 
-        for (int j = i; j <= candidates.length - 1; j++) {
-            if (j != 0 && candidates[j] == candidates[j - 1]) {
-                continue;
-            }
-            stack.add(candidates[j]);
-            dfs(candidates, target, result, stack, sum + candidates[j], j);
-            stack.pop();
+        if (index == candidates.length) {
+            return;
         }
+
+        dfs(candidates, target, list, stack, index + 1, sum);
+
+        if (index > 0 && candidates[index] == candidates[index - 1]) {
+            return;
+        }
+
+        stack.push(candidates[index]);
+
+        dfs(candidates, target, list, stack, index, sum + candidates[index]);
+
+        stack.pop();
     }
 }

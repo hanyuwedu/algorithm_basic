@@ -2,76 +2,72 @@ package gameday;
 
 public class MaximumSubarrayDifference {
     /**
-     * 8/2/2018
-     * reverse array operation
+     * 2/21/2019
+     * Gameday
+     * https://www.lintcode.com/problem/maximum-subarray-difference/description
      *
      * @param nums: A list of integers
      * @return: An integer indicate the value of maximum difference between two substrings
      */
     public int maxDiffSubArrays(int[] nums) {
-        if (nums == null || nums.length < 2) {
-            return 0;
+        int n = nums.length;
+
+        int[] reverse = new int[n];
+        for (int i = 0; i <= n - 1; i++) {
+            reverse[i] = nums[n - i - 1];
         }
 
-        int[] reverse = getReverse(nums);
+        int[] sum = getSum(nums);
+        int[] reverseSum = getSum(reverse);
 
-        int[] maxSum = getMaxSum(nums);
-        int[] minSum = getMinSum(nums);
-        int[] maxSumReverse = getMaxSum(reverse);
-        int[] minSumReverse = getMinSum(reverse);
+        int[] maxArray = getMax(sum);
+        int[] reverseMaxArray = getMax(reverseSum);
+        int[] minArray = getMin(sum);
+        int[] reverseMinArray = getMin(reverseSum);
 
-        int max = Integer.MIN_VALUE;
-        for (int i = 1; i <= nums.length - 1; i++) {
-            max = Math.max(max, Math.max(Math.abs(maxSum[i] - minSumReverse[nums.length - i]),
-                    Math.abs(minSum[i] - maxSumReverse[nums.length - i])));
+        int max = 0;
+
+        for (int i = 1; i <= n - 1; i++) {
+            max = Math.max(max, Math.max(Math.abs(maxArray[i] - reverseMinArray[n - i]), Math.abs(reverseMaxArray[i] - minArray[n - i])));
         }
 
         return max;
     }
 
-    private int[] getReverse(int[] nums) {
-        int[] reverse = new int[nums.length];
+    private int[] getSum(int[] nums) {
+        int[] sum = new int[nums.length + 1];
         for (int i = 0; i <= nums.length - 1; i++) {
-            reverse[i] = nums[nums.length - 1 - i];
+            sum[i + 1] = sum[i] + nums[i];
         }
 
-        return reverse;
+        return sum;
     }
 
-    private int[] getMaxSum(int[] nums) {
-        int[] prefix = getPrefixSum(nums);
-        int[] maxSum = new int[nums.length + 1];
+    private int[] getMax(int[] sum) {
+        int[] maxArray = new int[sum.length];
 
-        int left = 0, max = Integer.MIN_VALUE;
-        for (int i = 1; i <= nums.length; i++) {
-            max = Math.max(max, prefix[i] - left);
-            maxSum[i] = max;
-            left = Math.min(left, prefix[i]);
+        int min = 0, max = Integer.MIN_VALUE;
+
+        for (int i = 1; i <= sum.length - 1; i++) {
+            max = Math.max(max, sum[i] - min);
+            maxArray[i] = Math.max(max, sum[i] - min);
+            min = Math.min(min, sum[i]);
         }
 
-        return maxSum;
+        return maxArray;
     }
 
-    private int[] getMinSum(int[] nums) {
-        int[] prefix = getPrefixSum(nums);
-        int[] minSum = new int[nums.length + 1];
+    private int[] getMin(int[] sum) {
+        int[] minArray = new int[sum.length];
 
-        int left = 0, min = Integer.MAX_VALUE;
-        for (int i = 1; i <= nums.length; i++) {
-            min = Math.min(min, prefix[i] - left);
-            minSum[i] = min;
-            left = Math.max(left, prefix[i]);
+        int max = 0, min = Integer.MAX_VALUE;
+
+        for (int i = 1; i <= sum.length - 1; i++) {
+            min = Math.min(min, sum[i] - max);
+            minArray[i] = min;
+            max = Math.max(max, sum[i]);
         }
 
-        return minSum;
-    }
-
-    private int[] getPrefixSum(int[] nums) {
-        int[] prefix = new int[nums.length + 1];
-        for (int i = 1; i <= nums.length; i++) {
-            prefix[i] = prefix[i - 1] + nums[i - 1];
-        }
-
-        return prefix;
+        return minArray;
     }
 }
